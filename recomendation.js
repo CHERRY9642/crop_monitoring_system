@@ -24,10 +24,17 @@ async function recommendCrop() {
 
     if (data.recommended_crop) {
       resultDiv.innerHTML = `🌾 Recommended Crop: <span style="color:green;">${data.recommended_crop}</span><br>📩 SMS/Email sent!<br><button id="schedule-button" class="bg-blue-500 text-white p-2 rounded-lg mt-2">View Schedule</button>`;
+      
+      const crop = crops.find(c => c.name.toLowerCase() === data.recommended_crop.toLowerCase());
+      if (crop) {
+        updateCropDetails(crop); // Automatically show the schedule
+      }
+
+      // Optional re-trigger button
       document.getElementById("schedule-button").addEventListener("click", () => {
-        const crop = crops.find(c => c.name.toLowerCase() === data.recommended_crop.toLowerCase());
         if (crop) updateCropDetails(crop);
       });
+
     } else {
       resultDiv.innerHTML = `⚠ ${data.error}`;
     }
@@ -38,9 +45,9 @@ async function recommendCrop() {
 
 let crops = [];
 
-fetch('crops.json')  // Ensure the crops.json file exists in the correct path
+fetch('crops.json')
   .then(response => response.json())
-  .then(data => crops = data.crops);  // Corrected: accessing crops array from data
+  .then(data => crops = data.crops);
 
 function formatDate(days) {
   const today = new Date();
@@ -66,7 +73,7 @@ function updateCropDetails(crop) {
 
   const renderSchedule = (schedule, containerId) => {
     const container = document.getElementById(containerId);
-    container.innerHTML = '';  // Clear previous content
+    container.innerHTML = '';
     schedule.forEach(item => {
       const div = document.createElement('div');
       div.className = 'bg-blue-100 hover:scale-105 hover:shadow-lg transition transform duration-300 rounded-lg p-4 cursor-pointer flex items-start space-x-4';
